@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Menu Calc
 
 Full-stack application to generate ingredient orders from recipes across a given time period.
@@ -155,3 +156,7 @@ docker compose down -v
 - Use case orchestration is in `ordering/application/use_cases.py`.
 - Database access is implemented in `ordering/infrastructure/repositories.py`.
 - DRF views/serializers only perform input/output and call the use case.
+=======
+# menu-calc
+Full-stack application to generate ingredient orders from recipes across a given time period.
+>>>>>>> 446012a89bc4ff870da49f80415fdcb642e417ed
