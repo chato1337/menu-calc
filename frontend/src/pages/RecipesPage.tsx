@@ -180,9 +180,19 @@ export function RecipesPage() {
           filterOptions={(options) => options}
           getOptionLabel={(option) => `${option.name} (#${option.id})`}
           isOptionEqualToValue={(option, value) => option.id === value.id}
-          onChange={(_, value) => setSelectedProductIds(value.map((item) => item.id))}
+          onChange={(_, value, reason) => {
+            setSelectedProductIds(value.map((item) => item.id));
+            if (reason === "selectOption") {
+              setSearchInput("");
+              setDebouncedSearchInput("");
+            }
+          }}
           inputValue={searchInput}
-          onInputChange={(_, value) => setSearchInput(value)}
+          onInputChange={(_, value, reason) => {
+            if (reason === "input" || reason === "clear") {
+              setSearchInput(value);
+            }
+          }}
           ListboxProps={{ onScroll: onProductListScroll }}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
