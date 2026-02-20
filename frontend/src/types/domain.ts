@@ -64,6 +64,7 @@ export interface GenerateOrderPayload {
   name: string;
   date: string;
   day_ids: number[];
+  product_category?: string;
 }
 
 export interface ProductPayload {

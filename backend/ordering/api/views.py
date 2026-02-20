@@ -50,12 +50,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
 class DayViewSet(viewsets.ModelViewSet):
-    queryset = Day.objects.prefetch_related("recipes").all().order_by("id")
+    queryset = Day.objects.prefetch_related("recipes").all().order_by("-id")
     serializer_class = DaySerializer
 
 
 class OrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
-    queryset = Order.objects.prefetch_related("products").all().order_by("-date", "name")
+    queryset = Order.objects.prefetch_related("products").all().order_by("-id")
     serializer_class = OrderSerializer
 
     @action(detail=False, methods=["post"], url_path="generate")

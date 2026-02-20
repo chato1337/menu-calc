@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  MenuItem,
   Paper,
   Stack,
   Table,
@@ -21,6 +22,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { deleteOrder, getDaysForSelection, generateOrder, getOrders } from "../api/orders";
+import { listProducts } from "../api/entities";
 import { useAppSnackbar } from "../components/AppSnackbarProvider";
 import { PaginationControls } from "../components/PaginationControls";
 import { GenerateOrderPayload, Order } from "../types/domain";
@@ -37,6 +39,7 @@ export function OrdersPage() {
     name: "",
     date: "",
     day_ids: [],
+    product_category: "",
   });
 
   const queryKey = useMemo(() => ["orders", LIMIT, offset], [offset]);
@@ -49,6 +52,21 @@ export function OrdersPage() {
     queryKey: ["days", "selector"],
     queryFn: () => getDaysForSelection(),
   });
+  const { data: productCategoriesData } = useQuery({
+    queryKey: ["products", "categories"],
+    queryFn: () => listProducts({ limit: 200, offset: 0 }),
+  });
+  const productCategories = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (productCategoriesData?.results ?? [])
+            .map((item) => item.category.trim())
+            .filter((category) => category !== "")
+        )
+      ).sort((a, b) => a.localeCompare(b)),
+    [productCategoriesData]
+  );
   const getErrorMessage = (error: unknown) => (error instanceof Error ? error.message : t("notifications.genericError"));
 
   const generateMutation = useMutation({
@@ -57,6 +75,7 @@ export function OrdersPage() {
       showSnackbar(getErrorMessage(error), "error");
     },
     onSuccess: async () => {
+      resetForm();
       await queryClient.invalidateQueries({ queryKey: ["orders"] });
       showSnackbar(t("notifications.orderGenerated"), "success");
     },
@@ -74,7 +93,19 @@ export function OrdersPage() {
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
-    generateMutation.mutate(form);
+    generateMutation.mutate({
+      ...form,
+      product_category: form.product_category?.trim() ? form.product_category : undefined,
+    });
+  }
+
+  function resetForm() {
+    setForm({
+      name: "",
+      date: "",
+      day_ids: [],
+      product_category: "",
+    });
   }
 
   function toggleDay(dayId: number) {
@@ -108,6 +139,21 @@ export function OrdersPage() {
           InputLabelProps={{ shrink: true }}
           required
         />
+        <TextField
+          select
+          size="small"
+          value={form.product_category ?? ""}
+          onChange={(e) => setForm((prev) => ({ ...prev, product_category: e.target.value }))}
+          label={t("ordersPage.productCategoryLabel")}
+          sx={{ minWidth: 220 }}
+        >
+          <MenuItem value="">{t("ordersPage.allCategories")}</MenuItem>
+          {productCategories.map((category) => (
+            <MenuItem key={category} value={category}>
+              {category}
+            </MenuItem>
+          ))}
+        </TextField>
         <Stack direction="row" flexWrap="wrap" useFlexGap spacing={1}>
           {(days ?? []).map((day) => (
             <FormControlLabel

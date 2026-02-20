@@ -21,7 +21,7 @@ class GenerateOrderUseCase:
         if not self._day_repository.validate_ids(payload.day_ids):
             raise ValueError("Some day IDs do not exist")
 
-        product_quantities = self._quantity_reader.list_by_day_ids(payload.day_ids)
+        product_quantities = self._quantity_reader.list_by_day_ids(payload.day_ids, payload.product_category)
         if not product_quantities:
             raise ValueError("No product quantities found for the selected days")
 

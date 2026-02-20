@@ -81,3 +81,4 @@ class GenerateOrderSerializer(serializers.Serializer):
         child=serializers.IntegerField(min_value=1),
         allow_empty=False,
     )
+    product_category = serializers.CharField(max_length=80, required=False, allow_blank=True)

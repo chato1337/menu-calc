@@ -110,7 +110,7 @@ export function RecipesPage() {
       showSnackbar(getErrorMessage(error), "error");
     },
     onSuccess: async () => {
-      setEditing(null);
+      resetForm();
       await refresh();
       showSnackbar(t("notifications.updated"), "success");
     },
@@ -136,6 +136,7 @@ export function RecipesPage() {
     }
     createMutation.mutate(payload, {
       onSuccess: () => {
+        resetForm();
         showSnackbar(t("notifications.created"), "success");
       },
     });

@@ -7,10 +7,12 @@ from ordering.models import Day, Order, OrderProduct, ProductQuantity
 
 
 class DjangoProductQuantityRepository:
-    def list_by_day_ids(self, day_ids: list[int]) -> list[ProductQuantityData]:
+    def list_by_day_ids(self, day_ids: list[int], product_category: str | None = None) -> list[ProductQuantityData]:
         quantities: QuerySet[ProductQuantity] = ProductQuantity.objects.filter(
             product__recipes__days__id__in=day_ids
         ).select_related("product").prefetch_related("age_groups")
+        if product_category:
+            quantities = quantities.filter(product__category=product_category)
 
         return [
             ProductQuantityData(

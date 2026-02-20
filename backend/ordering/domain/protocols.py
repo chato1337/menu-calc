@@ -5,7 +5,7 @@ from .entities import OrderGenerationInput, OrderProductData, ProductQuantityDat
 
 
 class ProductQuantityReader(Protocol):
-    def list_by_day_ids(self, day_ids: list[int]) -> list[ProductQuantityData]:
+    def list_by_day_ids(self, day_ids: list[int], product_category: str | None = None) -> list[ProductQuantityData]:
         ...
 
 

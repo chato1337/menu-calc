@@ -34,4 +34,5 @@ class OrderGenerationInput:
     name: str
     date: date
     day_ids: list[int]
+    product_category: str | None = None
 
