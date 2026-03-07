@@ -35,4 +35,5 @@ class OrderGenerationInput:
     date: date
     day_ids: list[int]
     product_category: str | None = None
+    template_id: int | None = None
 

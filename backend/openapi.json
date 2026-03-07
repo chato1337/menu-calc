@@ -6,6 +6,297 @@
         "description": "API for generating ingredient orders from recipes and periods."
     },
     "paths": {
+        "/api/age-groups/": {
+            "get": {
+                "operationId": "age_groups_list",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "age-groups"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedAgeGroupList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "age_groups_create",
+                "tags": [
+                    "age-groups"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AgeGroup"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AgeGroup"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AgeGroup"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AgeGroup"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/age-groups/{id}/": {
+            "get": {
+                "operationId": "age_groups_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this age group.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "age-groups"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AgeGroup"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "age_groups_update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this age group.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "age-groups"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AgeGroup"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AgeGroup"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AgeGroup"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AgeGroup"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "age_groups_partial_update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this age group.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "age-groups"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedAgeGroup"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedAgeGroup"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedAgeGroup"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AgeGroup"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "age_groups_destroy",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this age group.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "age-groups"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
         "/api/days/": {
             "get": {
                 "operationId": "days_list",
@@ -375,6 +666,37 @@
                         "description": ""
                     }
                 }
+            },
+            "delete": {
+                "operationId": "orders_destroy",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this order.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
             }
         },
         "/api/orders/generate/": {
@@ -387,17 +709,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Order"
+                                "$ref": "#/components/schemas/GenerateOrder"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/Order"
+                                "$ref": "#/components/schemas/GenerateOrder"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/Order"
+                                "$ref": "#/components/schemas/GenerateOrder"
                             }
                         }
                     },
@@ -413,11 +735,21 @@
                     {}
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Order"
+                                    "$ref": "#/components/schemas/GenerateOrderResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenerateOrderErrorResponse"
                                 }
                             }
                         },
@@ -729,6 +1061,15 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -1010,6 +1351,15 @@
                         "description": "The initial index from which to return the results.",
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -1441,10 +1791,324 @@
                     }
                 }
             }
+        },
+        "/api/templates/": {
+            "get": {
+                "operationId": "templates_list",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedTemplateList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "templates_create",
+                "tags": [
+                    "templates"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Template"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Template"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Template"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Template"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/templates/{id}/": {
+            "get": {
+                "operationId": "templates_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this template.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Template"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "templates_update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this template.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Template"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Template"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Template"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Template"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "templates_partial_update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this template.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedTemplate"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedTemplate"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedTemplate"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Template"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "templates_destroy",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this template.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "AgeGroup": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "quantity"
+                ]
+            },
             "Day": {
                 "type": "object",
                 "properties": {
@@ -1461,11 +2125,76 @@
                         "items": {
                             "type": "integer"
                         }
+                    },
+                    "recipe_details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Recipe"
+                        },
+                        "readOnly": true
                     }
                 },
                 "required": [
                     "id",
+                    "name",
+                    "recipe_details",
+                    "recipes"
+                ]
+            },
+            "GenerateOrder": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 120
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "day_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    "product_category": {
+                        "type": "string",
+                        "maxLength": 80
+                    },
+                    "template_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "date",
+                    "day_ids",
                     "name"
+                ]
+            },
+            "GenerateOrderErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "detail"
+                ]
+            },
+            "GenerateOrderResponse": {
+                "type": "object",
+                "properties": {
+                    "order_id": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "order_id"
                 ]
             },
             "Order": {
@@ -1483,6 +2212,15 @@
                         "type": "string",
                         "format": "date"
                     },
+                    "template": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "template_title": {
+                        "type": "string",
+                        "nullable": true,
+                        "readOnly": true
+                    },
                     "products": {
                         "type": "array",
                         "items": {
@@ -1495,7 +2233,8 @@
                     "date",
                     "id",
                     "name",
-                    "products"
+                    "products",
+                    "template_title"
                 ]
             },
             "OrderProduct": {
@@ -1521,6 +2260,19 @@
                         "type": "string",
                         "format": "decimal",
                         "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$"
+                    },
+                    "total": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    },
+                    "qty_package": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    },
+                    "detail": {
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -1530,6 +2282,37 @@
                     "quantity",
                     "unit_of_measure"
                 ]
+            },
+            "PaginatedAgeGroupList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=400&limit=100"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=200&limit=100"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AgeGroup"
+                        }
+                    }
+                }
             },
             "PaginatedDayList": {
                 "type": "object",
@@ -1686,6 +2469,55 @@
                     }
                 }
             },
+            "PaginatedTemplateList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=400&limit=100"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=200&limit=100"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Template"
+                        }
+                    }
+                }
+            },
+            "PatchedAgeGroup": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    }
+                }
+            },
             "PatchedDay": {
                 "type": "object",
                 "properties": {
@@ -1702,6 +2534,13 @@
                         "items": {
                             "type": "integer"
                         }
+                    },
+                    "recipe_details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Recipe"
+                        },
+                        "readOnly": true
                     }
                 }
             },
@@ -1739,9 +2578,22 @@
                     "product": {
                         "type": "integer"
                     },
-                    "age_group": {
+                    "product_name": {
                         "type": "string",
-                        "maxLength": 50
+                        "readOnly": true
+                    },
+                    "age_groups": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "age_group_profiles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AgeGroup"
+                        },
+                        "readOnly": true
                     },
                     "unit_of_measure": {
                         "type": "string",
@@ -1774,6 +2626,29 @@
                         "items": {
                             "type": "integer"
                         }
+                    },
+                    "product_details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProductSummary"
+                        },
+                        "readOnly": true
+                    }
+                }
+            },
+            "PatchedTemplate": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 120
+                    },
+                    "content": {
+                        "type": "string"
                     }
                 }
             },
@@ -1817,9 +2692,22 @@
                     "product": {
                         "type": "integer"
                     },
-                    "age_group": {
+                    "product_name": {
                         "type": "string",
-                        "maxLength": 50
+                        "readOnly": true
+                    },
+                    "age_groups": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "age_group_profiles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AgeGroup"
+                        },
+                        "readOnly": true
                     },
                     "unit_of_measure": {
                         "type": "string",
@@ -1836,12 +2724,36 @@
                     }
                 },
                 "required": [
-                    "age_group",
+                    "age_group_profiles",
+                    "age_groups",
                     "id",
                     "package_type",
                     "product",
+                    "product_name",
                     "quantity",
                     "unit_of_measure"
+                ]
+            },
+            "ProductSummary": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 120
+                    },
+                    "category": {
+                        "type": "string",
+                        "maxLength": 80
+                    }
+                },
+                "required": [
+                    "category",
+                    "id",
+                    "name"
                 ]
             },
             "Recipe": {
@@ -1860,11 +2772,41 @@
                         "items": {
                             "type": "integer"
                         }
+                    },
+                    "product_details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProductSummary"
+                        },
+                        "readOnly": true
                     }
                 },
                 "required": [
                     "id",
-                    "name"
+                    "name",
+                    "product_details",
+                    "products"
+                ]
+            },
+            "Template": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 120
+                    },
+                    "content": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "content",
+                    "id",
+                    "title"
                 ]
             }
         },

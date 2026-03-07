@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ordering.models import AgeGroup, Day, Order, OrderProduct, Product, ProductQuantity, Recipe
+from ordering.models import AgeGroup, Day, Order, OrderProduct, Product, ProductQuantity, Recipe, Template
 
 
 class AgeGroupSerializer(serializers.ModelSerializer):
@@ -68,10 +68,14 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     products = OrderProductSerializer(many=True, read_only=True)
+    template_title = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ["id", "name", "date", "products"]
+        fields = ["id", "name", "date", "template", "template_title", "products"]
+
+    def get_template_title(self, obj) -> str | None:
+        return obj.template.title if obj.template else None
 
 
 class GenerateOrderSerializer(serializers.Serializer):
@@ -82,3 +86,17 @@ class GenerateOrderSerializer(serializers.Serializer):
         allow_empty=False,
     )
     product_category = serializers.CharField(max_length=80, required=False, allow_blank=True)
+    template_id = serializers.IntegerField(min_value=1, required=False, allow_null=True)
+
+    def validate_template_id(self, value):
+        if value is None:
+            return value
+        if not Template.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Template does not exist.")
+        return value
+
+
+class TemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Template
+        fields = ["id", "title", "content"]

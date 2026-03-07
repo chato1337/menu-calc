@@ -57,6 +57,8 @@ export interface Order {
   id: number;
   name: string;
   date: string;
+  template: number | null;
+  template_title: string | null;
   products: OrderProduct[];
 }
 
@@ -65,6 +67,7 @@ export interface GenerateOrderPayload {
   date: string;
   day_ids: number[];
   product_category?: string;
+  template_id?: number | null;
 }
 
 export interface ProductPayload {
@@ -93,4 +96,15 @@ export interface RecipePayload {
 export interface DayPayload {
   name: string;
   recipes: number[];
+}
+
+export interface Template {
+  id: number;
+  title: string;
+  content: string;
+}
+
+export interface TemplatePayload {
+  title: string;
+  content: string;
 }

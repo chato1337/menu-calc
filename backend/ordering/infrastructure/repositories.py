@@ -36,7 +36,7 @@ class DjangoOrderRepository:
         products: list[OrderProductData],
         order_date: date,
     ) -> int:
-        order = Order.objects.create(name=payload.name, date=order_date)
+        order = Order.objects.create(name=payload.name, date=order_date, template_id=payload.template_id)
         OrderProduct.objects.bulk_create(
             [
                 OrderProduct(

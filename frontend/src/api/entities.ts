@@ -11,6 +11,8 @@ import {
   ProductQuantityPayload,
   Recipe,
   RecipePayload,
+  Template,
+  TemplatePayload,
 } from "../types/domain";
 
 interface ListParams {
@@ -110,4 +112,20 @@ export function updateDay(id: number, payload: DayPayload): Promise<Day> {
 
 export function deleteDay(id: number): Promise<void> {
   return apiClient.delete(`/days/${id}/`);
+}
+
+export function listTemplates(params: ListParams): Promise<PaginatedResponse<Template>> {
+  return apiClient.get<PaginatedResponse<Template>>(`/templates/${toQuery(params)}`);
+}
+
+export function createTemplate(payload: TemplatePayload): Promise<Template> {
+  return apiClient.post<Template>("/templates/", payload);
+}
+
+export function updateTemplate(id: number, payload: TemplatePayload): Promise<Template> {
+  return apiClient.put<Template>(`/templates/${id}/`, payload);
+}
+
+export function deleteTemplate(id: number): Promise<void> {
+  return apiClient.delete(`/templates/${id}/`);
 }

@@ -1,4 +1,6 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://localhost:8000/api";
+import { env } from "../config/env";
+
+const API_BASE_URL = env.apiBaseUrl;
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`, {

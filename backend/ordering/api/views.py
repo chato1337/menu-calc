@@ -1,6 +1,8 @@
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers as drf_serializers
 
 from ordering.application.use_cases import GenerateOrderUseCase
 from ordering.domain.entities import OrderGenerationInput
@@ -10,7 +12,7 @@ from ordering.infrastructure.repositories import (
     DjangoOrderRepository,
     DjangoProductQuantityRepository,
 )
-from ordering.models import AgeGroup, Day, Order, Product, ProductQuantity, Recipe
+from ordering.models import AgeGroup, Day, Order, Product, ProductQuantity, Recipe, Template
 
 from .serializers import (
     AgeGroupSerializer,
@@ -20,6 +22,7 @@ from .serializers import (
     ProductQuantitySerializer,
     ProductSerializer,
     RecipeSerializer,
+    TemplateSerializer,
 )
 
 
@@ -55,9 +58,22 @@ class DayViewSet(viewsets.ModelViewSet):
 
 
 class OrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
-    queryset = Order.objects.prefetch_related("products").all().order_by("-id")
+    queryset = Order.objects.select_related("template").prefetch_related("products").all().order_by("-id")
     serializer_class = OrderSerializer
 
+    @extend_schema(
+        request=GenerateOrderSerializer,
+        responses={
+            201: inline_serializer(
+                name="GenerateOrderResponse",
+                fields={"order_id": drf_serializers.IntegerField()},
+            ),
+            400: inline_serializer(
+                name="GenerateOrderErrorResponse",
+                fields={"detail": drf_serializers.CharField()},
+            ),
+        },
+    )
     @action(detail=False, methods=["post"], url_path="generate")
     def generate(self, request):
         serializer = GenerateOrderSerializer(data=request.data)
@@ -77,3 +93,10 @@ class OrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Dest
             return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"order_id": order_id}, status=status.HTTP_201_CREATED)
+
+
+class TemplateViewSet(viewsets.ModelViewSet):
+    queryset = Template.objects.all().order_by("title")
+    serializer_class = TemplateSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["title", "content"]

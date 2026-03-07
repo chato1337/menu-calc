@@ -50,6 +50,7 @@ class Day(models.Model):
 class Order(models.Model):
     name = models.CharField(max_length=120)
     date = models.DateField()
+    template = models.ForeignKey("Template", on_delete=models.SET_NULL, null=True, blank=True, related_name="orders")
 
     def __str__(self) -> str:
         return f"{self.name} ({self.date})"
@@ -67,3 +68,11 @@ class OrderProduct(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} - {self.quantity} {self.unit_of_measure}"
+
+
+class Template(models.Model):
+    title = models.CharField(max_length=120, unique=True)
+    content = models.TextField()
+
+    def __str__(self) -> str:
+        return self.title

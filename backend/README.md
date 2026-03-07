@@ -106,6 +106,7 @@ pipenv run export-openapi
 - `GET/POST /api/product-quantities/`
 - `GET/POST /api/recipes/`
 - `GET/POST /api/days/`
+- `GET/POST /api/templates/`
 - `GET /api/orders/`
 - `POST /api/orders/generate/`
 
@@ -116,6 +117,7 @@ Example payload:
   "name": "Week 1 Order",
   "start_date": "2026-02-01",
   "end_date": "2026-02-14",
-  "day_ids": [1, 2, 3, 4, 5]
+  "day_ids": [1, 2, 3, 4, 5],
+  "template_id": 1
 }
 ```

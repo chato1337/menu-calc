@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Day, Order, OrderProduct, Product, ProductQuantity, Recipe
+from .models import Day, Order, OrderProduct, Product, ProductQuantity, Recipe, Template
 
 
 admin.site.register(Product)
@@ -9,3 +9,4 @@ admin.site.register(Recipe)
 admin.site.register(Day)
 admin.site.register(Order)
 admin.site.register(OrderProduct)
+admin.site.register(Template)

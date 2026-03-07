@@ -90,11 +90,32 @@ Example payload for `POST /api/orders/generate/`:
 
 ```bash
 cd frontend
+cp .env.example .env
 npm install
 npm run dev
 ```
 
 Frontend URL: `http://localhost:5173`
+
+### Frontend Environment Variables
+
+Frontend configuration is loaded from `frontend/.env`.
+
+If a variable is missing or empty in `.env`, the app falls back to defaults defined in `frontend/.env.example` through `frontend/src/config/env.ts`.
+
+Variables:
+
+- `VITE_APP_NAME`: Application name displayed in the UI shell/sidebar title.
+- `VITE_API_BASE_URL`: Base URL used by the frontend API client.
+- `VITE_FOOTER_TEXT`: Footer text displayed at the bottom of the main content area.
+
+Current default values (`frontend/.env.example`):
+
+```env
+VITE_APP_NAME="Semmillas de Vida - Menu Calc"
+VITE_API_BASE_URL="http://localhost:8000/api"
+VITE_FOOTER_TEXT="© 2026 Semmillas de Vida -  Ikwesx Software Solutions"
+```
 
 ## Local Dev (without Docker)
 
@@ -114,6 +135,7 @@ python manage.py runserver
 ```bash
 # Terminal 2
 cd frontend
+cp .env.example .env
 npm install
 npm run dev
 ```
