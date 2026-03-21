@@ -22,7 +22,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import CustomEditor from "../ckeditor/ckeditor";
 import { createTemplate, deleteTemplate, listTemplates, updateTemplate } from "../api/entities";
 import { useAppSnackbar } from "../components/AppSnackbarProvider";
 import { PaginationControls } from "../components/PaginationControls";
@@ -32,12 +32,17 @@ const LIMIT = 10;
 
 type CkEditorInstance = {
   model: {
-    change: (callback: (writer: { createText: (value: string) => unknown }) => void) => void;
+    change: (callback: (writer: {
+      createText: (value: string) => unknown;
+      createElement: (type: string, attrs?: Record<string, string>) => unknown;
+    }) => void) => void;
     insertContent: (content: unknown, selection: unknown) => void;
     document: { selection: unknown };
   };
   getData: () => string;
   setData: (data: string) => void;
+  execute: (command: string, options?: { source?: string }) => void;
+  editing?: { view?: { focus?: () => void } };
 };
 
 const TEMPLATE_VARIABLES = [
@@ -47,6 +52,7 @@ const TEMPLATE_VARIABLES = [
   "{{categoria}}",
   "{{fecha}}",
   "{{nombre_orden}}",
+  "{{tabla_productos}}",
 ];
 
 export function TemplatesPage() {
@@ -129,11 +135,21 @@ export function TemplatesPage() {
       showSnackbar(t("templatesPage.errors.invalidImageUrl"), "error");
       return;
     }
-    const nextData = `${content}<p><img src="${imageUrl}" alt="" /></p>`;
     if (editorInstance) {
-      editorInstance.setData(nextData);
+      try {
+        editorInstance.editing?.view?.focus?.();
+        editorInstance.model.change((writer) => {
+          const imageElement = writer.createElement("imageBlock", { src: imageUrl }) as unknown;
+          editorInstance.model.insertContent(imageElement, editorInstance.model.document.selection);
+        });
+        setContent(editorInstance.getData());
+      } catch (err) {
+        showSnackbar(t("templatesPage.errors.invalidImageUrl"), "error");
+      }
+    } else {
+      const nextData = `${content}<p><img src="${imageUrl}" alt="" /></p>`;
+      setContent(nextData);
     }
-    setContent(nextData);
   }
 
   function onSubmit(event: FormEvent) {
@@ -188,6 +204,9 @@ export function TemplatesPage() {
             h1 { margin: 0 0 16px 0; font-size: 24px; }
             table { width: 100%; border-collapse: collapse; margin: 12px 0; }
             th, td { border: 1px solid #d1d5db; padding: 8px; text-align: left; }
+            img { max-width: 100%; height: auto; }
+            figure.image.image_resized { display: block; box-sizing: border-box; }
+            figure.image.image_resized img { width: 100%; }
           </style>
         </head>
         <body>
@@ -197,8 +216,33 @@ export function TemplatesPage() {
       </html>
     `);
     printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+
+    const doPrint = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+
+    const imgs = printWindow.document.querySelectorAll("img");
+    const loadPromises = Array.from(imgs).map(
+      (img) =>
+        new Promise<void>((resolve) => {
+          if (img.complete) {
+            resolve();
+            return;
+          }
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        }),
+    );
+
+    if (loadPromises.length === 0) {
+      doPrint();
+    } else {
+      Promise.race([
+        Promise.all(loadPromises),
+        new Promise((r) => setTimeout(r, 5000)),
+      ]).then(doPrint);
+    }
   }
 
   return (
@@ -242,11 +286,18 @@ export function TemplatesPage() {
           }}
         >
           <CKEditor
-            editor={ClassicEditor as any}
+            editor={CustomEditor as any}
             data={content}
             config={{
               toolbar: [
                 "heading",
+                "|",
+                "alignment",
+                "|",
+                "fontSize",
+                "fontFamily",
+                "fontColor",
+                "fontBackgroundColor",
                 "|",
                 "bold",
                 "italic",
@@ -255,11 +306,30 @@ export function TemplatesPage() {
                 "bulletedList",
                 "numberedList",
                 "|",
+                "outdent",
+                "indent",
+                "|",
+                "link",
                 "insertTable",
+                "blockQuote",
                 "|",
                 "undo",
                 "redo",
               ],
+              fontSize: {
+                options: [10, 12, 14, "default", 18, 20, 24],
+                supportAllValues: true,
+              },
+              fontFamily: {
+                options: [
+                  "default",
+                  "Arial, Helvetica, sans-serif",
+                  "Georgia, serif",
+                  "Times New Roman, Times, serif",
+                  "Verdana, Geneva, sans-serif",
+                ],
+                supportAllValues: true,
+              },
               table: {
                 contentToolbar: ["tableColumn", "tableRow", "mergeTableCells"],
               },

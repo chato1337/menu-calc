@@ -145,15 +145,27 @@ export function OrdersPage() {
 
   function buildProductsTableHtml(order: Order): string {
     const rows = order.products
+      // .map(
+      //   (product) => `
+      //     <tr>
+      //       <td>${escapeHtml(product.name)}</td>
+      //       <td>${escapeHtml(product.quantity)}</td>
+      //       <td>${escapeHtml(product.unit_of_measure)}</td>
+      //       <td>${escapeHtml(product.package_type)}</td>
+      //       <td>${product.total}</td>
+      //       <td>${product.qty_package}</td>
+      //     </tr>
+      //   `
+      // )
       .map(
         (product) => `
           <tr>
-            <td>${escapeHtml(product.name)}</td>
-            <td>${escapeHtml(product.quantity)}</td>
+            <td>${product.package_type}</td>
             <td>${escapeHtml(product.unit_of_measure)}</td>
-            <td>${escapeHtml(product.package_type)}</td>
-            <td>${product.total}</td>
             <td>${product.qty_package}</td>
+            <td>${escapeHtml(product.name)}</td>
+            <td></td>
+            <td></td>
           </tr>
         `
       )
@@ -163,12 +175,12 @@ export function OrdersPage() {
       <table>
         <thead>
           <tr>
-            <th>${escapeHtml(t("common.product"))}</th>
-            <th>${escapeHtml(t("common.quantity"))}</th>
-            <th>${escapeHtml(t("common.unit"))}</th>
-            <th>${escapeHtml(t("common.package"))}</th>
-            <th>${escapeHtml(t("ordersPage.total"))}</th>
             <th>${escapeHtml(t("ordersPage.packageQuantity"))}</th>
+            <th>${escapeHtml(t("common.unit"))}</th>
+            <th>${escapeHtml(t("common.quantity"))}</th>
+            <th>${escapeHtml(t("common.product"))}</th>
+            <th>${escapeHtml(t("ordersPage.unitValue"))}</th>
+            <th>${escapeHtml(t("ordersPage.totalValue"))}</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -220,14 +232,41 @@ export function OrdersPage() {
             table { width: 100%; border-collapse: collapse; margin: 12px 0; }
             th, td { border: 1px solid #d1d5db; padding: 8px; text-align: left; }
             img { max-width: 100%; height: auto; }
+            figure.image.image_resized { display: block; box-sizing: border-box; }
+            figure.image.image_resized img { width: 100%; }
           </style>
         </head>
         <body>${renderedContent}</body>
       </html>
     `);
     printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+
+    const doPrint = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+
+    const imgs = printWindow.document.querySelectorAll("img");
+    const loadPromises = Array.from(imgs).map(
+      (img) =>
+        new Promise<void>((resolve) => {
+          if (img.complete) {
+            resolve();
+            return;
+          }
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        }),
+    );
+
+    if (loadPromises.length === 0) {
+      doPrint();
+    } else {
+      Promise.race([
+        Promise.all(loadPromises),
+        new Promise((r) => setTimeout(r, 5000)),
+      ]).then(doPrint);
+    }
   }
 
   return (

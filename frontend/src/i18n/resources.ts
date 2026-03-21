@@ -131,6 +131,8 @@ export const resources = {
         templateAssigned: "Minuta",
         noTemplate: "Sin minuta",
         noDetail: "-",
+        unitValue: "valor unitario",
+        totalValue: "valor total",
       },
       templatesPage: {
         title: "Minutas (Templates)",
@@ -288,6 +290,8 @@ export const resources = {
         templateAssigned: "Template",
         noTemplate: "No template",
         noDetail: "-",
+        unitValue: "unit value",
+        totalValue: "total value",
       },
       templatesPage: {
         title: "Templates (Minutas)",
