@@ -1,11 +1,13 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import PrintIcon from "@mui/icons-material/Print";
 import {
   Alert,
+  Box,
   Button,
   Checkbox,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   FormControlLabel,
@@ -35,7 +37,9 @@ export function OrdersPage() {
   const { showSnackbar } = useAppSnackbar();
   const queryClient = useQueryClient();
   const [offset, setOffset] = useState(0);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [previewOrder, setPreviewOrder] = useState<Order | null>(null);
+  const [previewContent, setPreviewContent] = useState("");
+  const printableContentRef = useRef<HTMLDivElement | null>(null);
   const [form, setForm] = useState<GenerateOrderPayload>({
     name: "",
     date: "",
@@ -93,7 +97,7 @@ export function OrdersPage() {
     },
     onSuccess: async (_, deletedOrderId) => {
       await queryClient.invalidateQueries({ queryKey: ["orders"] });
-      setSelectedOrder((prev) => (prev?.id === deletedOrderId ? null : prev));
+      setPreviewOrder((prev) => (prev?.id === deletedOrderId ? null : prev));
     },
   });
 
@@ -206,18 +210,29 @@ export function OrdersPage() {
     return rendered;
   }
 
-  function printOrder(order: Order) {
+  function getRenderedOrderTemplate(order: Order): string | null {
     if (!order.template) {
       showSnackbar(t("ordersPage.printMissingTemplate"), "error");
-      return;
+      return null;
     }
     const selectedTemplate = (templatesData?.results ?? []).find((template) => template.id === order.template);
     if (!selectedTemplate) {
       showSnackbar(t("ordersPage.printTemplateNotFound"), "error");
-      return;
+      return null;
     }
 
-    const renderedContent = renderOrderTemplate(order, selectedTemplate);
+    return renderOrderTemplate(order, selectedTemplate);
+  }
+
+  function openOrderPreview(order: Order) {
+    const renderedContent = getRenderedOrderTemplate(order);
+    if (!renderedContent) return;
+
+    setPreviewOrder(order);
+    setPreviewContent(renderedContent);
+  }
+
+  function printHtml(title: string, htmlContent: string) {
     const printWindow = window.open("", "_blank", "width=1000,height=800");
     if (!printWindow) return;
 
@@ -225,7 +240,7 @@ export function OrdersPage() {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>${escapeHtml(order.name)}</title>
+          <title>${escapeHtml(title)}</title>
           <style>
             body { font-family: Arial, sans-serif; margin: 24px; color: #111827; }
             h1, h2, h3 { margin-top: 0; }
@@ -236,7 +251,7 @@ export function OrdersPage() {
             figure.image.image_resized img { width: 100%; }
           </style>
         </head>
-        <body>${renderedContent}</body>
+        <body>${htmlContent}</body>
       </html>
     `);
     printWindow.document.close();
@@ -267,6 +282,12 @@ export function OrdersPage() {
         new Promise((r) => setTimeout(r, 5000)),
       ]).then(doPrint);
     }
+  }
+
+  function printOrderPreview() {
+    if (!previewOrder) return;
+
+    printHtml(previewOrder.name, printableContentRef.current?.innerHTML ?? previewContent);
   }
 
   return (
@@ -371,11 +392,8 @@ export function OrdersPage() {
               <TableCell>{item.template_title ?? t("ordersPage.noTemplate")}</TableCell>
               <TableCell>
                 <Stack direction="row" spacing={1}>
-                  <Button size="small" onClick={() => setSelectedOrder(item)}>
+                  <Button size="small" onClick={() => openOrderPreview(item)}>
                     {t("ordersPage.viewDetail")}
-                  </Button>
-                  <Button size="small" onClick={() => printOrder(item)} startIcon={<PrintIcon />}>
-                    {t("ordersPage.print")}
                   </Button>
                   <Button
                     size="small"
@@ -393,38 +411,65 @@ export function OrdersPage() {
         </Table>
       </Paper>
 
-      <Dialog open={Boolean(selectedOrder)} onClose={() => setSelectedOrder(null)} fullWidth maxWidth="lg">
+      <Dialog open={Boolean(previewOrder)} onClose={() => setPreviewOrder(null)} fullWidth maxWidth="lg">
         <DialogTitle>
-          {selectedOrder
-            ? t("ordersPage.orderDetailWithName", { name: selectedOrder.name })
-            : t("ordersPage.orderDetailTitle")}
+          {previewOrder
+            ? t("ordersPage.previewWithName", { name: previewOrder.name })
+            : t("ordersPage.previewTitle")}
         </DialogTitle>
         <DialogContent>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>{t("common.product")}</TableCell>
-                <TableCell>{t("common.quantity")}</TableCell>
-                <TableCell>{t("ordersPage.packageQuantity")}</TableCell>
-                <TableCell>{t("ordersPage.total")}</TableCell>
-                <TableCell>{t("ordersPage.detail")}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(selectedOrder?.products ?? []).map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>
-                    {product.quantity} {product.unit_of_measure} ({product.package_type})
-                  </TableCell>
-                  <TableCell>{product.qty_package}</TableCell>
-                  <TableCell>{product.total}</TableCell>
-                  <TableCell sx={{ whiteSpace: "pre-line" }}>{product.detail || t("ordersPage.noDetail")}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+            {t("ordersPage.previewInstructions")}
+          </Typography>
+          <Box
+            ref={printableContentRef}
+            key={previewOrder?.id ?? "order-preview"}
+            contentEditable
+            suppressContentEditableWarning
+            dangerouslySetInnerHTML={{ __html: previewContent }}
+            sx={{
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 1,
+              minHeight: 420,
+              p: 3,
+              outline: "none",
+              overflowX: "auto",
+              "&:focus": {
+                borderColor: "primary.main",
+                boxShadow: (theme) => `0 0 0 1px ${theme.palette.primary.main}`,
+              },
+              "& table": {
+                width: "100%",
+                borderCollapse: "collapse",
+                my: 1.5,
+              },
+              "& th, & td": {
+                border: "1px solid",
+                borderColor: "divider",
+                p: 1,
+                textAlign: "left",
+              },
+              "& img": {
+                maxWidth: "100%",
+                height: "auto",
+              },
+              "& figure.image.image_resized": {
+                display: "block",
+                boxSizing: "border-box",
+              },
+              "& figure.image.image_resized img": {
+                width: "100%",
+              },
+            }}
+          />
         </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPreviewOrder(null)}>{t("common.cancel")}</Button>
+          <Button variant="contained" onClick={printOrderPreview} startIcon={<PrintIcon />}>
+            {t("ordersPage.printModified")}
+          </Button>
+        </DialogActions>
       </Dialog>
 
       <PaginationControls
